@@ -1,0 +1,437 @@
+CREATE DATABASE Wypozyczalnia_samochodow_PROJEKT
+USE Wypozyczalnia_samochodow_PROJEKT
+GO
+
+create table Handlarze
+	(
+	Nr_h int primary key identity(1,1),
+	Nazwa varchar(30) not null UNIQUE,
+	Ulica varchar(30) not null,
+	Kod varchar(6) not null,
+	Miasto varchar(30) not null,
+	);
+GO
+create table Klienci
+    (
+    Nr_k int primary key identity(1,1),
+    Nazwisko varchar(30) not null,
+    Imie varchar(30) not null,
+    PESEL char(11) not null,
+    Ulica varchar(30) not null,
+    Kod varchar(6) not null,
+    Miasto varchar(30) not null,
+    plec char(1) NOT NULL CHECK (plec IN ('K','M'))
+    );
+GO
+create table Samochody
+    (
+    Nr_s int primary key identity(1,1),
+    Marka nvarchar(15) not null,
+    Model nvarchar(15) not null,
+    Typ nvarchar(15) not null check(Typ  in('Sedan','Suv','Cabriolet','Hatchback','Mini van')),
+    Pojemnosc float not null,
+    Kolor nvarchar(10) not null,
+    Rocznik int not null,
+    Spalanie float not null,
+    Nr_h int,
+    status_pojazdu nvarchar(20)not null check (status_pojazdu IN('wypozyczony','w salonie')) Default 'w salonie',
+	nr_vin nvarchar(17) not null
+    CONSTRAINT Samochody_handlarze_FK foreign key (Nr_h) references Handlarze (Nr_h)
+    );
+GO
+create table Wypozyczenia 
+    (
+    id_Wypozyczenia int primary key identity(1,1),
+    id_klienta int not null,
+    id_pojazdu int not null,
+    id_handlarza int,
+    kwota money not null,
+    data_rozp_Wypozyczenia date not null,
+    data_zakon_Wypozyczenia date,
+	nr_wypozyczenia char(5) not null,
+    CONSTRAINT Wypozyczenia_klient_FK FOREIGN KEY(id_klienta) REFERENCES [dbo].[Klienci] ([Nr_k]),
+    CONSTRAINT Wypozyczenia_pojazd_FK FOREIGN KEY(id_pojazdu) REFERENCES [dbo].[Samochody] ([Nr_s]),
+    CONSTRAINT Wypozyczenia_handlarz_FK FOREIGN KEY(id_handlarza) REFERENCES [dbo].[Handlarze] ([Nr_h]),
+    );
+GO
+--dane handlarze
+insert into Handlarze (Nazwa,Ulica,Kod,Miasto) values ('Auto-Extra','Fabryczna 5','95-200','Pabianice');
+insert into Handlarze (Nazwa,Ulica,Kod,Miasto) values ('Super-Fura','Sienkiwicza 70','95-200','Pabianice');
+insert into Handlarze (Nazwa,Ulica,Kod,Miasto) values ('Samochodzik','Ogrodowa 6','98-200','Sieradz');
+insert into Handlarze (Nazwa,Ulica,Kod,Miasto) values ('Auto-Klasa','Mickiewicza 45','98-100','£ask');
+insert into Handlarze (Nazwa,Ulica,Kod,Miasto) values ('Auto-NRD','Torowa 4','98-200','Sieradz');
+insert into Handlarze (Nazwa,Ulica,Kod,Miasto) values ('Auto-Holland','Odrodzenia 98','98-200','Sieradz');
+--dane samochody
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Mazda','626','Sedan','1.8','Bordowy','1994','7.3','1','w salonie','JM3ER29L070133282');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Mazda','626','Sedan','1.8','Czerwony','1995','8','2','w salonie','YS3ED48E5Y3070016');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Mazda','626','Sedan','1.6','Bordowy','2000','8','3','w salonie','JH4DA3350GS005185');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Mazda','626','Hatchback','2.5','Bia³y','2001','8.2','4','w salonie','JH4CC2650NC000393');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Mazda','626','Sedan','2.0','Zielony','1997','8.8','5','w salonie','WBSPM9C52BE202514');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Mazda','626','Sedan','2.0','Czarny','1997','7.6','6','w salonie','JH4KA4630LC007479');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Peugeot','406','Sedan','2.0','Czarny','1997','7.9','2','w salonie','JH4DA3340GS007428');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Peugeot','406','Sedan','2.0','Niebieski','1997','8.6','1','w salonie','JH4DA9440PS002537');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Peugeot','406','Sedan','2.0','Czerwony','1997','7.6','3','w salonie','JH4KA4550JC048596');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Peugeot','406','Sedan','1.8','Czarny','1997','9','4','w salonie','1HD1FCW116Y619817');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Peugeot','406','Sedan','1.8','Bia³y','1998','9.2','5','w salonie','JH4DB1550PS001359');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Peugeot','406','Sedan','2.5','Czarny','1999','7.6','2','w salonie','1G8ZH528X2Z310309');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Peugeot','206','Sedan','2.5','Czarny','2000','7.6','1','w salonie','4T1SK12E1N4028452');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Renault','Laguna','Hatchback','2.0','Czarny','2013','9','3','w salonie','JH4DA9350NS005381');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Renault','Laguna','Sedan','2.0','Niebieski','2007','12','3','w salonie','1GCVKREC4EZ253199');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Renault','Laguna','Sedan','2.2','Czarny','2000','10','4','w salonie','1FTFW1ET6BFC07509');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Renault','Laguna','Sedan','2.2','Niebieski','2010','7.2','5','w salonie','5TDKY5G15BS000413');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Renault','Laguna','Sedan','2.5','Czarny','1999','11.1','6','w salonie','2GCEC13T061281139');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Renault','Laguna','Sedan','2.5','Bordowy','2003','10','6','w salonie','4JGDA5HB9CA027726');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Nissan','Primera','Sedan','2.0','Czarny','2004','8','6','w salonie','1J8HR58275C640006');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Nissan','Almera','Sedan','1.8','Czarny','2001','7.4','5','w salonie','2B4GP44381R369277');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Nissan','Maxima','Sedan','3.0','Bia³y','2017','7.6','4','w salonie','1C3CDZAB1DN631178');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Nissan','Primera','Sedan','2.8','Czerwony','1998','8.2','3','w salonie','1FMYU03Z06KC87186');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Nissan','300 ZX','Sedan','3.0','Z³oty','1988','9.5','2','w salonie','2T1BU4EE4DC120713');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Nissan','Maxima','Sedan','3.5','Bia³y','2004','10','3','w salonie','1HTSCZWM6LH206804');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Nissan','Almera','Sedan','2.0','Czarny','2003','8','1','w salonie','4JGBB86E16A131957');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Honda','Civic','Hatchback','1.6','Czarny','2003','8.1','2','w salonie','2HGES26772H566107');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Honda','Civic','Hatchback','1.4','Bordowy','2003','7.5','1','w salonie','3B7HF13Z6VG798752');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Honda','CRX','Hatchback','2.0','Srebrny','2003','9.2','1','w salonie','3GNDA13DX7S573081');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Honda','CRX','Hatchback','2.5','Niebieski','2003','8.4','4','w salonie','JTHDL5EF1A5002460');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Honda','Accord','Hatchback','2.0','Zielony','2003','8.7','1','w salonie','2FMDK4JC9BBA74137');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Honda','Accord','Hatchback','3.0','Czarny','2003','8.9','1','w salonie','WBSEH93587CY23917');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Audi','Q7','Suv','3.0','Czarny','2013','8','1','w salonie','1FMYU93193KA68530');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Audi','Q7','Suv','3.2','Czarny','2012','8','1','w salonie','1N6BD0CT2AC437918');
+insert into Samochody (Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)values('Chrysler','Pacifica','Mini van','3.6','Czarny','2017','8','1','w salonie','1HGCM56374A052906');
+--dane klienci
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Bartczyk','Dariusz','84071729994','Grobelna 6','95-200','Pabianice','M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Plich','Edward','88092529456','Sienkiewicza 3','97-400','Be³chatów', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Gajda','Marcin','73071276131','Ogrodowa 20','98-200','Sieradz', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Sobieryn','Mariusz','95121647377','Podleœna 6','97-400','Be³chatów', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Sobieski','Arek','03241677796','Kaczeñcowa 11','95-200','Pabianice', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Antoniak','Jerzy','71092286612','Rolnicza 1','98-200','Sieradz', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Osowski','Przemek','91072976331','Mickiewicza 9','98-200','Sieradz', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Banat','Micha³','82081445756','Polna 7','98-200','Sieradz', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Mielczarek','Rafa³','47030162173','Leœna 3','95-200','Pabianice', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Janeczek','Jarek','61062216374','Krzywa 7','98-200','Sieradz', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Krawiec','Patrycja','52102723572','Robotnicza 6','98-200','Sieradz','K');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Denuszek','Marian','52102723572','Odrodzenia 15','98-200','Sieradz', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Jurek','Justyna','52110571475','Narutowicza 5','97-400','Be³chatów', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Madej','Konrad','58061424233','Sikorskiego 9','98-200','Sieradz', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Majda','Janina','55112846235','Fabryczna 8','95-200','Pabianice','K');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Suwara','Zygmunt','74030637538','Grobelna 8','97-400','Be³chatów', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Rychlik','Józef','69040143911','Sienkiewicza 1','98-200','Sieradz', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Kubis','Krzysztof','67071266533','Ogrodowa 7','95-200','Pabianice', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Durka','Andrzej','92102788755','Narutowicza 4','98-200','Sieradz', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Owczarek','Maurycy','91121455437','Torowa 12','98-200','Sieradz', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Berski','Tadeusz','76102889753','Kolejowa 4','98-200','Sieradz', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Szuster','Marcin','50060551118','Robotnicza 5','95-200','Pabianice', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Kowalski','Arek','86101862453','Kaczeñcowa 10','98-200','Sieradz', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Nowak','Micha³','79041499614','Mickiewicza 10','97-400','Be³chatów', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Jopek','Rafa³','97082642354','Polna 9','95-200','Pabianice', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Kopias','Jan','52042461558','Leœna 1','98-200','Sieradz', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Piechota','Dariusz','63030439356','Ogrodowa 15','95-200','Pabianice', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Prusisz','Maria','61121448355','Sikorskiego 7','98-200','Sieradz', 'K');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Kmiecik','Stanis³aw','04222746452','Odrodzenia 9','97-400','Be³chatów', 'M');
+insert into Klienci (Nazwisko,Imie, PESEL,Ulica,Kod,Miasto,plec) values ('Dancewicz','Stefan','78080742277','Fabryczna 3','95-200','Pabianice', 'M')
+GO
+
+alter table [dbo].[Wypozyczenia]
+alter column [id_handlarza] int
+
+alter table wypozyczenia
+ALTER COLUMN nr_wypozyczenia char(5) NOT NULL
+go
+--Procedura 1# - dodawanie lub aktualizowanie wypo¿yczenia samochodu
+
+create or alter procedure up_InsertUpdateWypozyczenia
+@Id_Klienta int,
+@Id_pojazdu int,
+@kwota money,
+@data_rozp_Wypozyczenia date,
+@data_zakon_Wypozyczenia date,
+@id_wypozyczenia int,
+@nr_wpozyczenia char(5)
+AS 
+BEGIN
+BEGIN TRY
+    DECLARE @blad nvarchar(50) = '';
+      IF EXISTS(Select 1 From [dbo].[Wypozyczenia]
+WHERE
+nr_wypozyczenia=@nr_wpozyczenia)
+ Begin
+  Update [dbo].[Wypozyczenia] Set
+  [id_klienta]=@Id_Klienta,
+  [id_pojazdu]=@Id_pojazdu,
+  [kwota]=@kwota,
+  [data_rozp_Wypozyczenia]=@data_rozp_Wypozyczenia,
+  [data_zakon_Wypozyczenia]=@data_zakon_Wypozyczenia,
+  nr_wypozyczenia=@nr_wpozyczenia
+  Where
+ nr_wypozyczenia=@nr_wpozyczenia
+ 
+  END
+ELSE
+BEGIN
+INSERT INTO [dbo].[Wypozyczenia]([id_klienta], [id_pojazdu], [kwota], [data_rozp_Wypozyczenia], [data_zakon_Wypozyczenia],nr_wypozyczenia)
+Values (@Id_Klienta, @Id_pojazdu,@kwota,@data_rozp_Wypozyczenia,@data_zakon_Wypozyczenia,@nr_wpozyczenia)
+END
+END TRY
+BEGIN CATCH
+        SET @blad = 'B£¥D: Nie uda³o siê wykonaæ procedury!';
+        RAISERROR(@blad,15,1);
+        THROW;
+    END CATCH
+END
+GO
+exec up_InsertUpdateWypozyczenia 1,1,150,'2022-06-10','2022-06-11',8,'BSCA1'; 
+GO
+-- Procedura 2# - dodawanie/zmiana samochodów
+create procedure up_InsertUpdateSamochody
+@Marka nvarchar(15),
+@Model nvarchar(15),
+@Typ nvarchar(15),
+@Pojemnosc float,
+@Kolor nvarchar(10),
+@Rocznik int,
+@Spalanie float,
+@Nr_h int,
+@status_pojazdu nvarchar(20),
+@nr_vin nvarchar(17)
+AS
+BEGIN 
+
+BEGIN TRY
+
+DECLARE @blad nvarchar(50) = '';
+IF EXISTS(Select 1 From [dbo].[Samochody]
+Where 
+ nr_vin=@nr_vin)
+  Begin
+  Update [dbo].[Samochody] Set
+   Marka=@Marka,
+  Model=@Model,
+  Typ=@Typ, 
+  Pojemnosc=@Pojemnosc,
+  Kolor=@Kolor,
+  Rocznik=@Rocznik,
+  Spalanie=@Spalanie,
+  Nr_h=@Nr_h,
+  status_pojazdu=@status_pojazdu
+  Where 
+  nr_vin=@nr_vin
+  End
+  Else
+  Begin
+Insert into [dbo].[Samochody]( Marka,Model, Typ, Pojemnosc,Kolor,Rocznik,Spalanie,Nr_h,status_pojazdu,nr_vin)
+Values (@Marka,@Model,@Typ,@Pojemnosc,@Kolor,@Rocznik,@Spalanie,@Nr_h,@status_pojazdu,@nr_vin)
+End
+END TRY
+    BEGIN CATCH
+        SET @blad = 'B£¥D: Nie uda³o siê wykonaæ procedury!';
+        RAISERROR(@blad,15,1);
+        THROW;
+    END CATCH
+END
+GO 
+exec up_InsertUpdateSamochody  'Audi','A4','sedan',2.2,'czarny',2009,8.5,3,'wypozyczony', 'AB0B339WSS4FAZ030';
+--Procedura 3# - Dodawanie handlarzy
+create procedure up_InsertUpdateHandlarze
+@Nazwa varchar(30),
+@Ulica varchar(30),
+@Kod varchar(6),
+@Miasto varchar(30)
+AS 
+BEGIN
+BEGIN TRY
+    DECLARE @blad nvarchar(50) = '';
+
+    IF EXISTS(Select 1 From [dbo].[Handlarze]
+Where 
+ [Nazwa]=@Nazwa)
+  Begin
+  Update [dbo].[Handlarze] Set
+[Nazwa]=@Nazwa,
+[Ulica]=@Ulica,
+[Kod]=@Kod,
+[Miasto]=@Miasto
+Where 
+ [Nazwa]=@Nazwa
+ End
+ Else
+ Begin
+INSERT INTO [dbo].[Handlarze](Nazwa,Ulica,Kod,Miasto) Values (@Nazwa, @Ulica, @Kod, @Miasto)
+End
+END TRY
+BEGIN CATCH
+        SET @blad = 'B£¥D: Nie uda³o siê wykonaæ procedury!';
+        RAISERROR(@blad,15,1);
+        THROW;
+    END CATCH
+END
+GO
+exec up_InsertUpdateHandlarze 'Micha³ Komis','Konwaliowa 15','90-220','LódŸ';
+exec up_InsertUpdateHandlarze 'Mateusz Komis','Jasna 9','90-220','LódŸ';
+
+--Procedura 4# - dodawanie klientów
+create PROCEDURE up_InsertUpdateKlienci
+@Nazwisko nvarchar(30),
+@Imie nvarchar(30),
+@Ulica nvarchar(30),
+@Kod nvarchar(6),
+@Miasto nvarchar(30),
+@plec char(1),
+@pesel char(11)
+AS
+BEGIN
+BEGIN TRY
+    DECLARE @blad nvarchar(50) = '';
+
+    IF EXISTS(Select 1 From [dbo].[Klienci]
+WHERE
+pesel=@pesel)
+
+  Begin
+  Update [dbo].[Klienci] Set
+[Nazwisko]=@Nazwisko,
+[Imie]=@Imie,
+[Ulica]=@Ulica,
+[Kod]=@Kod,
+[Miasto]=@Miasto,
+[plec]=@plec
+Where
+pesel=@pesel
+END
+ELSE
+BEGIN
+INSERT INTO [dbo].[klienci](Nazwisko,Imie,pesel,Ulica,Kod,Miasto,plec) VALUES (@Nazwisko,@Imie,@pesel,@Ulica,@Kod,@Miasto,@plec)
+END 
+END TRY
+BEGIN CATCH
+        SET @blad = 'B£¥D: Nie uda³o siê wykonaæ procedury!';
+        RAISERROR(@blad,15,1);
+        THROW;
+    END CATCH
+END
+GO
+--Procedura 5# - Wynajête samochody
+create procedure raportwynajetychsamochodow
+	as 
+	begin
+	Select * from Samochody where [status_pojazdu]='wypozyczony'
+	end
+	exec raportwynajetychsamochodow
+
+GO
+--Procedura 6# - Dostêpne samochody
+create procedure raportdostepnychsamochodow
+as 
+begin
+Select * from Samochody where [status_pojazdu]='w salonie'
+end
+go
+exec raportdostepnychsamochodow
+GO
+
+--Procedura 7# -- 
+create procedure raporthandlarzaobecnegomiesiaca
+as 
+begin
+Select TOP 1 [Nazwa],Sum([kwota]) As Zarobki,DateName(mm,GetDATE()) AS Miesiac FROM [dbo].[Wypozyczenia],[dbo].[Handlarze],[dbo].[Klienci] WHERE [id_klienta]=[Nr_k] AND [id_handlarza]=[Nr_h] AND Month([data_zakon_Wypozyczenia])=MONTH(GETDATE()) GROUP BY [Nazwa] Order by Zarobki desc
+
+end
+GO
+--Procedura #8 - Wyœwietlanie handlarza miesi¹ca
+
+CREATE procedure raportnajlepszegohandlarza
+as 
+begin
+Select  [Nazwa],Sum([kwota]) As Zarobki FROM [dbo].[Wypozyczenia],[dbo].[Handlarze],[dbo].[Klienci] WHERE [id_klienta]=[Nr_k] AND [id_handlarza]=[Nr_h] GROUP BY [Nazwa] Order by Zarobki desc
+end
+
+exec raportnajlepszegohandlarza
+GO
+
+--Funkcja 1#
+create function wypozyczeniaklienta
+(@pesel char(11))
+Returns Table
+AS
+return (
+SELECT ([dbo].[Klienci].[Nazwisko]+' '+[dbo].[Klienci].[Imie]) As Imie_i_Nazwisko,[Nazwa], [Marka],Model,[nr_vin],[data_rozp_Wypozyczenia],[data_zakon_Wypozyczenia]
+From [dbo].[Wypozyczenia],[dbo].[Klienci],[dbo].[Handlarze],[dbo].[Samochody] WHERE [id_klienta]=[Nr_k] AND[id_handlarza]=[dbo].[Handlarze].[Nr_h] AND [id_pojazdu]=[Nr_s] AND pesel like @pesel
+)
+GO
+--wywo³anie funkcji 1#
+select * from [dbo].[wypozyczeniaklienta]('84071729994');
+
+--Funkcja 2#
+create function Wypozyczonesamochodyhandlarza1
+(@Nazwa nvarchar(30))
+Returns Table
+AS
+return (
+SELECT [Nazwa],[Marka],[Model],[Typ],[Pojemnosc],[Kolor],[Rocznik],[Spalanie],[data_rozp_Wypozyczenia],[data_zakon_Wypozyczenia]
+From [dbo].[Wypozyczenia],[dbo].[Handlarze],[dbo].[Samochody] WHERE [dbo].[Samochody].[Nr_h]=[dbo].[Handlarze].[Nr_h] AND [id_pojazdu]=[Nr_s] AND Nazwa like @Nazwa
+)
+go
+--wywo³anie funkcji 2#
+select * from [dbo].[Wypozyczonesamochodyhandlarza1]('Auto-Extra')
+
+--Trigger 1#
+CREATE or alter TRIGGER UpdatewsalonieSamochody ON  Wypozyczenia
+   AFTER INSERT,  Update
+AS 
+BEGIN
+
+Update Samochody
+Set status_pojazdu='w salonie'
+From Samochody 
+Inner join Wypozyczenia
+On id_pojazdu=Nr_s
+Where
+Wypozyczenia.[data_zakon_Wypozyczenia]<GETDATE()
+END
+GO
+
+--Trigger 2#
+CREATE or alter TRIGGER UpdatewypozyczonySamochody ON  Wypozyczenia
+   AFTER INSERT,  Update
+AS 
+BEGIN
+
+Update Samochody
+Set status_pojazdu='wypozyczony'
+From Samochody 
+Inner join Wypozyczenia
+On id_pojazdu=Nr_s
+Where
+Wypozyczenia.[data_zakon_Wypozyczenia]>GETDATE()
+END
+GO
+
+--Trigger 3#
+CREATE or alter TRIGGER InsertUpdateWypozyczeniaHandlarz ON  Wypozyczenia
+   AFTER INSERT,  Update
+AS 
+BEGIN
+
+Update Wypozyczenia
+Set id_handlarza=Samochody.Nr_h
+From Samochody,Handlarze,Wypozyczenia
+Where
+Samochody.Nr_h=Handlarze.Nr_h
+END
+GO
+
+--Widok 1#
+CREATE or alter VIEW [dbo].[vWypozyczenia]
+AS
+SELECT [id_wypozyczenia],([dbo].[Klienci].[Nazwisko]+' '+[dbo].[Klienci].[Imie]) As Imie_i_Nazwisko,[Nazwa] AS Handlarz, [Marka], [model],[data_rozp_Wypozyczenia],[data_zakon_Wypozyczenia]
+From [dbo].[Wypozyczenia],[dbo].[Klienci],[dbo].[Handlarze],[dbo].[Samochody] WHERE [id_klienta]=[Nr_k] AND [id_handlarza]=[dbo].[Handlarze].[Nr_h] AND [id_pojazdu]=[Nr_s]
+
+GO
+--Wywo³anie utworzonego widoku
+SELECT * FROM [dbo].[vWypozyczenia]
+
+--Widok 2#
+Create or alter view [dbo].[vSamochody]
+AS
+SELECT [Nr_s],[Marka],[Model],[Typ],[Pojemnosc],[Kolor],[Rocznik],[Spalanie],[Nazwa] As Handlarz,[status_pojazdu],[nr_vin] From [dbo].[Samochody],[dbo].[Handlarze] Where Samochody.[Nr_h]=Handlarze.[Nr_h]
+Go
+--Wywo³anie utworzonego widoku 
+SELECT * FROM [dbo].[vSamochody]
